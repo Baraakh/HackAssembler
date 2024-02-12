@@ -131,6 +131,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="clsHackParser.h" />
+    <ClInclude Include="clsInstruction.h" />
     <ClInclude Include="clsInstructionsTranslator.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

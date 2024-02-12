@@ -26,5 +26,8 @@
     <ClInclude Include="clsInstructionsTranslator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="clsInstruction.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
