@@ -2,42 +2,73 @@
 #include <iostream>
 #include <string>
 #include <map>
+#include <fstream>
 #include "clsInstruction.h";
+#include "clsSymbol.h";
+#include "strUtilities.h";
 using namespace std;
 
 class clsInstructionsTranslator
 {
 private:
-
-	string decTo15Bin(string Dec)
+	class symbolTable
 	{
-		string strBin = "";
+	private:
 
-		int num = stoi(Dec);
+		map<string, string> _SymbolTable;
 
-		while (num > 0)
+		int variableAllocationCounter = 16;
+
+	public:
+
+		symbolTable()
 		{
-			int temp = num % 2;
-
-			strBin += to_string(temp);
-
-			num /= 2;
+			_SymbolTable = { {"R0", "0"},
+				{"R1", "1"},
+				{"R2", "2"},
+				{"R3", "3"},
+				{"R4", "4"},
+				{"R5", "5"},
+				{"R6", "6"},
+				{"R7", "7"},
+				{"R8", "8"},
+				{"R9", "9"},
+				{"R10", "10"},
+				{"R11", "11"},
+				{"R12", "12"},
+				{"R13", "13"},
+				{"R14", "14"},
+				{"R15", "15"},
+				{"SCREEN", "16384"},
+				{"KBD", "24576"},
+				{"SP", "0"},
+				{"LCL", "1"},
+				{"ARG", "2"},
+				{"THIS", "3"},
+				{"THAT", "4"} };
 		}
 
-		if (strBin.size() < 15)
+		void setLabel(string key, string value)
 		{
-			int emptyBitsLenght = 15 - strBin.size();
+			_SymbolTable[key] = value;
+		}
 
-			for (int i = 0; i < emptyBitsLenght; i++)
+		string getSymbolValue(string key)
+		{
+			// check type of symbol
+
+			if (_SymbolTable.find(key) != _SymbolTable.end())
 			{
-				strBin += "0";
+				return _SymbolTable[key];
 			}
+			
+			_SymbolTable[key] = to_string(variableAllocationCounter);
+			variableAllocationCounter++;
+
+			return _SymbolTable[key];
 		}
 
-		reverse(strBin.begin(), strBin.end());
-
-		return strBin;
-	}
+	};
 
 	map<string, string> _MapDest;
 
@@ -45,10 +76,59 @@ private:
 
 	map<string, string> _MapJump;
 
+	string inputFileLocation;
+
+	symbolTable _SymbolTable;
+
+	void FirstPass()
+	{
+		fstream assemblyFile;
+		assemblyFile.open(this->inputFileLocation, ios::in);//read Mode
+
+		if (assemblyFile.is_open())
+		{
+
+			string Line;
+			int currentLineNumber = 0;
+
+			while (getline(assemblyFile, Line))
+			{
+
+				// check for label, so we can save it 
+				string instruction = trim(removeComments(Line));
+
+				if (instruction == "") continue; // means that the Line is simply a whitespace or comment 
+
+				size_t openlabelSymbolIndex = instruction.find("(");
+
+				if (openlabelSymbolIndex != string::npos)
+				{
+					size_t closelabelSymbolIndex = instruction.find(")");
+
+					string labelSymbol = instruction.substr(openlabelSymbolIndex + 1, closelabelSymbolIndex - (openlabelSymbolIndex + 1));
+
+					_SymbolTable.setLabel(labelSymbol, to_string(currentLineNumber));
+
+					continue;
+				}
+
+				currentLineNumber++;
+
+			}
+
+			assemblyFile.close();
+
+		}
+	}
+
 public:
 
-	clsInstructionsTranslator()
+	clsInstructionsTranslator(string inputFileLocation)
 	{
+		this->inputFileLocation = inputFileLocation;
+
+		FirstPass();
+
 		_MapDest = { {"0", "000"},
 				{"M", "001"},
 				{"D", "010"},
@@ -95,6 +175,7 @@ public:
 				{"D&M", "1000000"},
 				{"D|A", "0010101"},
 				{"D|M", "1010101"}};
+
 	}
 
 	string ConvertInstructionToBinary(clsInstruction* instruction)
@@ -104,8 +185,17 @@ public:
 		{
 			vector<string> aInstructionElements = instruction->getInstructionElements();
 
-			string strBinValue = decTo15Bin(aInstructionElements[0]);
+			string strBinValue;
 
+			if (!is_number(aInstructionElements[0]))
+			{
+				strBinValue = decTo15Bin(_SymbolTable.getSymbolValue(aInstructionElements[0]));
+			}
+			else
+			{
+				strBinValue = decTo15Bin(aInstructionElements[0]);
+			}
+			
 			return ("0" + strBinValue);
 		}
 		else if (clsInstruction::cInstruction == instruction->instructionType())
@@ -115,7 +205,6 @@ public:
 			return "111" + _MapComp[cInstructionElements[1]] + _MapDest[cInstructionElements[0]] + _MapJump[cInstructionElements[2]];
 		}
 	}
-
 
 };
 

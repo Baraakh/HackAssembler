@@ -133,6 +133,8 @@
     <ClInclude Include="clsHackParser.h" />
     <ClInclude Include="clsInstruction.h" />
     <ClInclude Include="clsInstructionsTranslator.h" />
+    <ClInclude Include="clsSymbol.h" />
+    <ClInclude Include="strUtilities.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

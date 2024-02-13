@@ -3,55 +3,13 @@
 #include <string>
 #include <vector>
 #include "clsInstruction.h";
+#include "strUtilities.h";
+#include "clsInstructionsTranslator.h"
 using namespace std;
 
 class clsHackParser
 {
 private:
-
-	
-	static string removeComments(string str)
-	{
-		size_t found = str.find("//");
-
-		if (found != string::npos)
-		{
-			return str.substr(0, found);
-		}
-
-		return str;
-	}
-
-	static string trimLeft(string str)
-	{
-		for (int i = 0; i < str.length(); i++)
-		{
-			if (str[i] != ' ')
-			{
-				return str.substr(i, str.length() - i);
-			}
-		}
-
-		return "";
-	}
-
-	static string trimRight(string str)
-	{
-		for (int i = str.length() - 1; -1 < i; i--)
-		{
-			if (str[i] != ' ')
-			{
-				return str.substr(0, i + 1);
-			}
-		}
-
-		return "";
-	}
-
-	static string trim(string str)
-	{
-		return trimRight(trimLeft(str));
-	}
 
 	static bool isAInstruction(string str)
 	{
@@ -113,6 +71,8 @@ public:
 
 		if (instruction == "") return nullptr;
 
+		if (instruction[0] == '(') return nullptr; // if it's a label then Ignore it.
+
 		if (isAInstruction(instruction))
 		{
 			return new aInstruction(getAInstructionValue(instruction));
@@ -124,7 +84,5 @@ public:
 			return new cInstruction(vCInstruction[0], vCInstruction[1], vCInstruction[2]);
 		}
 	}
-	
-
 
 };

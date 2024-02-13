@@ -8,8 +8,6 @@ using namespace std;
 
 int main(int argc, char* argv[])
 {
-	clsInstructionsTranslator translator;
-
     string inputFileLocation = "";
     string outputFileLocation = "Output.hack";
 
@@ -46,6 +44,8 @@ int main(int argc, char* argv[])
         }
     }
     
+    clsInstructionsTranslator translator(inputFileLocation);
+
 	fstream assemblyFile;
 	assemblyFile.open(inputFileLocation, ios::in);//read Mode
 
