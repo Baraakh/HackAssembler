@@ -111,6 +111,8 @@ public:
 	{
 		string instruction = trim(removeComments(strInstruction));
 
+		if (instruction == "") return nullptr;
+
 		if (isAInstruction(instruction))
 		{
 			return new aInstruction(getAInstructionValue(instruction));
