@@ -29,9 +29,6 @@
     <ClInclude Include="clsInstruction.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="clsSymbol.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="strUtilities.h">
       <Filter>Header Files</Filter>
     </ClInclude>

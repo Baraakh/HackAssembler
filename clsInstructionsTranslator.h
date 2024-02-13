@@ -4,7 +4,6 @@
 #include <map>
 #include <fstream>
 #include "clsInstruction.h";
-#include "clsSymbol.h";
 #include "strUtilities.h";
 using namespace std;
 
